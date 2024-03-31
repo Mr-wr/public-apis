@@ -1,0 +1,30 @@
+name: 同步fork原仓库  # 工作流名称 (gōng zuò liú míng chéng)
+
+on:
+  schedule:  # 触发器 (chōu fā qì)
+    - cron: "0 0 * * *"  # cron 表达式，每天午夜运行 (cron biǎo dá shì, měi tiān wǔ yè yún xíng)
+
+jobs:
+  sync:  # 任务名称 (rèndàw míng chéng)
+    runs-on: ubuntu-latest  # 指定运行环境 (zhǐ dìng yùn xíng huán jìng)
+
+    steps:  # 执行步骤 (zhí xíng bù zhòu)
+      - uses: actions/checkout@v3  # 使用 checkout action 检查出代码 (shǐ yòng checkout action jiǎn chá chū dài mǎ)
+        # 省略其他配置 (shěng lvè qí tā pèi zhì)
+
+      - name: Add upstream remote  # 添加上游仓库远程指针 (tiān jiā shàngyóu cāng kù yuǎn chéng zhǐ zh针)
+        run: git remote add upstream https://github.com/public-apis/public-apis.git  # 运行 git remote add 命令添加远程指针 (yùn xíng git remote add mìng lìng tiān jiā yuǎn chéng zhǐ zh针)
+      
+      - name: 设置git用户
+        run: |
+          git config --global user.email "1434687824@qq.com"
+          git config --global user.name "mr-wr(web)"
+     
+      - name: Fetch upstream changes  # 拉取上游仓库更新 (lā qū shàngyóu cāng kù gēng xìn)
+        run: git fetch upstream  # 运行 git fetch 命令拉取更新 (yùn xíng git fetch mìng lìng lā qū gēng xìn)
+
+      - name: Merge upstream changes  # 合并上游仓库更新 (hé bìng shàngyóu cāng kù gēng xìn)
+        run: git merge upstream/master --allow-unrelated-histories -Xtheirs  # 运行 git merge 命令合并更新 (yùn xíng git merge mìng lìng hé bìng gēng xìn)
+
+      - name: Push changes to fork  # 推送更新到分支 (tuī sòng gēng xìn dào fēn zhī)
+        run: git push origin master  # 运行 git push 命令推送到远程仓库的 master 分支 (yùn xíng git push mìng lìng tuī sòng dào yuǎn chéng cāng kù de master fēn zhī)
